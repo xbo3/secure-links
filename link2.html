@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>Secure</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;600;700&display=swap');
+*{margin:0;padding:0;box-sizing:border-box}
+body{background:#0a0e17;color:#e0e0e0;font-family:'Noto Sans KR',sans-serif;min-height:100vh;display:flex;align-items:center;justify-content:center;padding:20px;-webkit-user-select:none;user-select:none}
+.wrap{width:100%;max-width:400px;text-align:center}
+.pw-screen{animation:fadeIn .4s}
+.pw-label{font-size:.85rem;color:rgba(255,255,255,.4);margin-bottom:24px}
+.pw-box{position:relative;margin-bottom:16px}
+.pw-box input{width:100%;padding:14px 18px;background:rgba(255,255,255,.04);border:1.5px solid rgba(0,240,255,.12);border-radius:10px;color:#fff;font-family:'Noto Sans KR';font-size:1rem;text-align:center;letter-spacing:.15em;outline:none;transition:border-color .3s}
+.pw-box input:focus{border-color:rgba(0,240,255,.4);box-shadow:0 0 15px rgba(0,240,255,.08)}
+.pw-box input::placeholder{color:rgba(255,255,255,.15);letter-spacing:.05em}
+.pw-btn{width:100%;padding:14px;background:linear-gradient(135deg,#00f0ff,#0080ff);color:#000;border:none;border-radius:10px;font-family:'Noto Sans KR';font-size:.9rem;font-weight:600;cursor:pointer;transition:all .3s}
+.pw-btn:hover{box-shadow:0 0 25px rgba(0,240,255,.25);transform:translateY(-1px)}
+.err{display:none;margin-top:12px;padding:10px;background:rgba(255,34,102,.08);border:1px solid rgba(255,34,102,.15);border-radius:8px;font-size:.78rem;color:#ff2266}
+.err.show{display:block;animation:shake .4s}
+@keyframes shake{0%,100%{transform:translateX(0)}25%{transform:translateX(-6px)}75%{transform:translateX(6px)}}
+.info-screen{display:none;animation:fadeIn .5s}
+.info-card{background:rgba(255,255,255,.03);border:1.5px solid rgba(0,240,255,.1);border-radius:14px;padding:28px 24px;text-align:left}
+.info-row{margin-bottom:14px}
+.info-label{font-size:.68rem;color:rgba(255,255,255,.3);margin-bottom:3px;font-weight:500}
+.info-value{font-size:1.05rem;font-weight:600;color:#fff;letter-spacing:.02em}
+.info-value.accent{color:#00f0ff;font-size:1.15rem;letter-spacing:.06em}
+.info-note{margin-top:16px;padding:12px;background:rgba(168,85,247,.06);border:1px solid rgba(168,85,247,.1);border-radius:8px;font-size:.78rem;color:rgba(255,255,255,.5);line-height:1.5}
+.timer{margin-top:20px;font-size:.7rem;color:rgba(255,34,102,.5);text-align:center}
+@keyframes fadeIn{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="pw-screen" id="pwScreen">
+    <div class="pw-label">패스워드를 입력하세요.</div>
+    <div class="pw-box"><input type="password" id="pwInput" placeholder="" autofocus onkeydown="if(event.key==='Enter')decrypt()"></div>
+    <button class="pw-btn" onclick="decrypt()">확인</button>
+    <div class="err" id="errMsg">비밀번호가 올바르지 않습니다.</div>
+  </div>
+  <div class="info-screen" id="infoScreen">
+    <div class="info-card">
+      <div class="info-row"><div class="info-label">은행</div><div class="info-value" id="dBank"></div></div>
+      <div class="info-row"><div class="info-label">예금주</div><div class="info-value" id="dHolder"></div></div>
+      <div class="info-row"><div class="info-label">계좌번호</div><div class="info-value accent" id="dAccount"></div></div>
+      <div class="info-note" id="dNote" style="display:none"></div>
+    </div>
+    <div class="timer" id="timer"></div>
+  </div>
+</div>
+<script>
+const ENC={salt:"ZhtoahHrthRT2UqCRkkHUQ==",iv:"OmZAnlB+svUQGSTe",data:"E7cTMvYFGKJg8EtX4fS9nd3USYNnLG3OZq+V3ylt2aGBVhJL5/6efrEdbey/UssjpW82JI8OORyEOwyCejAG/ItDH7tbmLlQn54D27Pyt6RJbMrfEIDCWli2AcRlrbFpDzFiRuh0jVlvRPM88522dA=="};
+function b64ToUint8(b){return Uint8Array.from(atob(b),c=>c.charCodeAt(0))}
+async function decrypt(){
+  const pw=document.getElementById('pwInput').value;if(!pw)return;
+  try{
+    const enc=new TextEncoder();const salt=b64ToUint8(ENC.salt),iv=b64ToUint8(ENC.iv),data=b64ToUint8(ENC.data);
+    const km=await crypto.subtle.importKey('raw',enc.encode(pw),{name:'PBKDF2'},false,['deriveKey']);
+    const key=await crypto.subtle.deriveKey({name:'PBKDF2',salt,iterations:100000,hash:'SHA-256'},km,{name:'AES-GCM',length:256},false,['decrypt']);
+    const dec=await crypto.subtle.decrypt({name:'AES-GCM',iv},key,data);
+    const info=JSON.parse(new TextDecoder().decode(dec));
+    document.getElementById('pwScreen').style.display='none';
+    document.getElementById('infoScreen').style.display='block';
+    document.getElementById('dBank').textContent=info.bank;
+    document.getElementById('dHolder').textContent=info.holder;
+    document.getElementById('dAccount').textContent=info.account;
+    if(info.note){document.getElementById('dNote').style.display='block';document.getElementById('dNote').textContent=info.note}
+    const EXP=180;if(EXP>0){let sec=EXP;const ti=setInterval(()=>{sec--;const m=Math.floor(sec/60),s=sec%60;document.getElementById('timer').textContent=m+':'+(s<10?'0':'')+s+' 후 자동 만료';if(sec<=0){clearInterval(ti);document.body.innerHTML='<div style="display:flex;align-items:center;justify-content:center;height:100vh;color:rgba(255,255,255,.3);font-family:sans-serif">세션이 만료되었습니다.</div>'}},1000);}
+  }catch(e){document.getElementById('errMsg').classList.add('show');setTimeout(()=>document.getElementById('errMsg').classList.remove('show'),2000)}
+}
+</script></body></html>

@@ -50,7 +50,7 @@ body{background:#0a0e17;color:#e0e0e0;font-family:'Noto Sans KR',sans-serif;min-
   </div>
 </div>
 <script>
-const ENC={salt:"OQYUvjsFjoxECG14OFu1zQ==",iv:"2HUF79/acTZGuXFr",data:"9rgLN/TwcFb8gjyVKXcS8vFUa6WVJaBKmg4lYxaDQ/esyMySwahSWAMuNanfSWQjFxOag5vtZmnUzgXI4OwQYqj1t59g7suAZduco2sABgMn+wMQF6V+iKFey/oBVmEbbAWM9rZf/13Z2gDm+wvhMlObNQBijmmk5Dlw2rB7IKs="};
+const ENC={salt:"hPMHtEpOS+vlV0Wg6urMyw==",iv:"2qMCRYWn1L9VwRNL",data:"vfDmpRMvkcRv/dNUkSsUfZINQBnSHYcLhxxZvZ7EBLeP+4+mdQgo990s4Q4owiFLbRA237rpIt8ApPu+LvFYZcMfrkYtmShvmZ4oICg9BGt1dUaEKm72NQ03CLUWZJVTJOHmlGXjR+SJBNCpB9OxETsCRUpZ7fUZq6WbFw8="};
 function b64ToUint8(b){return Uint8Array.from(atob(b),c=>c.charCodeAt(0))}
 async function decrypt(){
   const pw=document.getElementById('pwInput').value;if(!pw)return;
@@ -66,7 +66,7 @@ async function decrypt(){
     document.getElementById('dHolder').textContent=info.holder;
     document.getElementById('dAccount').textContent=info.account;
     if(info.note){document.getElementById('dNote').style.display='block';document.getElementById('dNote').textContent=info.note}
-    const EXP=0;if(EXP>0){let sec=EXP;const ti=setInterval(()=>{sec--;const m=Math.floor(sec/60),s=sec%60;document.getElementById('timer').textContent=m+':'+(s<10?'0':'')+s+' 후 자동 만료';if(sec<=0){clearInterval(ti);document.body.innerHTML='<div style="display:flex;align-items:center;justify-content:center;height:100vh;color:rgba(255,255,255,.3);font-family:sans-serif">세션이 만료되었습니다.</div>'}},1000);}
+    const EXP=180;if(EXP>0){let sec=EXP;const ti=setInterval(()=>{sec--;const m=Math.floor(sec/60),s=sec%60;document.getElementById('timer').textContent=m+':'+(s<10?'0':'')+s+' 후 자동 만료';if(sec<=0){clearInterval(ti);document.body.innerHTML='<div style="display:flex;align-items:center;justify-content:center;height:100vh;color:rgba(255,255,255,.3);font-family:sans-serif">세션이 만료되었습니다.</div>'}},1000);}
   }catch(e){document.getElementById('errMsg').classList.add('show');setTimeout(()=>document.getElementById('errMsg').classList.remove('show'),2000)}
 }
 </script></body></html>

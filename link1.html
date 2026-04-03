@@ -50,7 +50,7 @@ body{background:#0a0e17;color:#e0e0e0;font-family:'Noto Sans KR',sans-serif;min-
   </div>
 </div>
 <script>
-const ENC={salt:"pEnQTpA41uNH0P/QsgzoMA==",iv:"cfqOA+JHvXi1qI1e",data:"6o8WyxNE3tHDumIlftW+OWccLDGCOlkTzj5uWOJvKU2DzyzQ9sGTHE7cCNsjFQ0k+TfkBe5hnGYZAgEvc9ateg0MjpGHWHs="};
+const ENC={salt:"Ral44hm19jvrP1rBNV8qsg==",iv:"6JGemYRSvUBZyrHB",data:"K3LmZXHLYBV10ff1UQhSkAv23TPEOfMqWjPG9R8LSXfuGcBsq9hVS7ib4wa3rGQ2CQIEpjmD+VtL02wNyKHfXLS/RNGX1MTEZ0ysxOFxDt2dup0HdKC8WhgRxWOhU3cHjtqGb+ELHCKqrShULdc8+UhQNmIXiPsRkuZh/KKIVe7Aka0YuQWmRVa8Cq+fGUI9FWGBSYXtYhpTIoWtnRX7"};
 function b64ToUint8(b){return Uint8Array.from(atob(b),c=>c.charCodeAt(0))}
 async function decrypt(){
   const pw=document.getElementById('pwInput').value;if(!pw)return;
@@ -66,7 +66,7 @@ async function decrypt(){
     document.getElementById('dHolder').textContent=info.holder;
     document.getElementById('dAccount').textContent=info.account;
     if(info.note){document.getElementById('dNote').style.display='block';document.getElementById('dNote').textContent=info.note}
-    const EXP=180;if(EXP>0){let sec=EXP;const ti=setInterval(()=>{sec--;const m=Math.floor(sec/60),s=sec%60;document.getElementById('timer').textContent=m+':'+(s<10?'0':'')+s+' 후 자동 만료';if(sec<=0){clearInterval(ti);document.body.innerHTML='<div style="display:flex;align-items:center;justify-content:center;height:100vh;color:rgba(255,255,255,.3);font-family:sans-serif">세션이 만료되었습니다.</div>'}},1000);}
+    const EXP=60;if(EXP>0){let sec=EXP;const ti=setInterval(()=>{sec--;const m=Math.floor(sec/60),s=sec%60;document.getElementById('timer').textContent=m+':'+(s<10?'0':'')+s+' 후 자동 만료';if(sec<=0){clearInterval(ti);document.body.innerHTML='<div style="display:flex;align-items:center;justify-content:center;height:100vh;color:rgba(255,255,255,.3);font-family:sans-serif">세션이 만료되었습니다.</div>'}},1000);}
   }catch(e){document.getElementById('errMsg').classList.add('show');setTimeout(()=>document.getElementById('errMsg').classList.remove('show'),2000)}
 }
 </script></body></html>
